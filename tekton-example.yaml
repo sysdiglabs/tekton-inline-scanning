@@ -118,9 +118,13 @@ spec:
   - name: scan-image-step
     image: sysdiglabs/sysdig-inline-scan:latest
     args:
-      - -k 
-      - <sysdig_secure_api_token>
       - $(inputs.resources.image.url)
+    env:
+      - name: SYSDIG_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: sysdig-secrets
+            key: sysdig-secure-api-key
 ---
 #This task deploys with kubectl apply -f <filename>
 apiVersion: tekton.dev/v1alpha1
