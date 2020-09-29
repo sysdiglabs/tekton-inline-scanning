@@ -33,7 +33,7 @@ You'll need to add a secret for your Sysdig Secure API token, and reference it i
 
 The example pipeline describen in the [official Tekton tutorial](https://github.com/tektoncd/pipeline/blob/master/docs/tutorial.md) uses `kaniko` to build and push the image in a single step. 
 
-To have a task that builds the image, scans it locally, and only pushes it to the registry if it is in compliance with scanning policies, we have to tell `naiko` in the first step to not push the image, and add a last additional step to push it using `skopeo` (as `kaniko` can't push an image without rebuilding it, which would waste resources).
+To have a task that builds the image, scans it locally, and only pushes it to the registry if it is in compliance with scanning policies, we have to tell `kaniko` in the first step to not push the image, and add a last additional step to push it using `skopeo` (as `kaniko` can't push an image without rebuilding it, which would waste resources).
 
 ```yaml
 apiVersion: tekton.dev/v1beta1
