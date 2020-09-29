@@ -5,6 +5,7 @@ metadata:
   name: build-bot
 secrets:
   - name: docker-auth-for-tekton
+  - name: sysdig-secrets
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -80,7 +81,7 @@ spec:
         - --no-push
         - --oci-layout-path=/workspace/oci
 
-    - name: scan-image-step
+    - name: scan
       image: sysdiglabs/sysdig-inline-scan:latest
       args:
         - -U
@@ -94,30 +95,17 @@ spec:
               key: sysdig-secure-api-key
 
     - name: push
-      image: sysdiglabs/sysdig-inline-scan
+      image: quay.io/skopeo/stable
       command:
-        - /bin/sh
+        - /usr/bin/skopeo
       args:
-        - -c
-        - "/usr/bin/skopeo --dest-creds $DOCKER_USER:$DOCKER_PASS --insecure-policy copy oci:/workspace/oci/ docker://$IMAGE"
-      env:
-        - name: IMAGE
-          value: $(outputs.resources.builtImage.url)
-        - name: DOCKER_USER
-          valueFrom:
-            secretKeyRef:
-              name: docker-auth-for-tekton
-              key: username
-        - name: DOCKER_PASS
-          valueFrom:
-            secretKeyRef:
-              name: docker-auth-for-tekton
-              key: password
+        - --insecure-policy      
+        - --dest-authfile
+        - /tekton/home/.docker/config.json
+        - copy
+        - oci:/workspace/oci/
+        - docker://$(outputs.resources.builtImage.url)
 
-# $(credentials.path)
-# disable-home-env-overwrite
-# disable-working-directory-overwrite
-# https://github.com/tektoncd/pipeline/issues/2165
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
@@ -147,9 +135,6 @@ spec:
       outputs:
       - name: builtImage
         resource: web-image
-
-
-
 
 
 
