@@ -27,7 +27,7 @@ You have to define a scanning step after building an image in a Tekton task, so 
             key: sysdig-secure-api-key
 ```
 
-You'll need to add a secret for your Sysdig Secure API token, and reference it in the service account definition that executes the pipeline, as you can see in the [full pipeline example for beta Tekton API](./beta/pipeline-example-beta).
+You'll need to add a secret for your Sysdig Secure API token, and reference it in the service account definition that executes the pipeline, as you can see in the [full pipeline example for beta Tekton API](./beta/tekton-inline-scan-beta.yaml).
 
 ## Build-scan-push Tekton Task
 
@@ -105,6 +105,7 @@ spec:
 
 You can find full pipelines examples for both **alpha** and **beta** Tekton API in the following files of this repo:
 
-* [pipeline-example-alpha.yaml](./alpha/pipeline-example-alpha.yaml).
-* [pipeline-example-beta.yaml](./beta/pipeline-example-beta.yaml).
+* [pipeline-example-alpha.yaml](./alpha/tekton-inline-scan-alpha.yaml).
+* [pipeline-example-beta.yaml](./beta/tekton-inline-scan-beta.yaml).
+
 
