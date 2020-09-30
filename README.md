@@ -4,7 +4,7 @@ This repository contains instructions and examples of how to use Sysdig inline s
 
 They have been tested and can be used for **vanilla Kubernetes** as well as on **OpenShift**, as Sysdig inline scanning doesn't require a privileged container.
 
-For more information about Sysdig, visit https://sysdig.com.
+For more information about Sysdig, visit [https://sysdig.com](https://sysdig.com).
 
 ## Inline Image Scanning
 
