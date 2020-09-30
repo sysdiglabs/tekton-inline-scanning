@@ -58,10 +58,6 @@ spec:
   steps:
     - name: build
       image: gcr.io/kaniko-project/executor:v0.16.0
-      # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
-      env:
-        - name: "DOCKER_CONFIG"
-          value: "/tekton/home/.docker/"
       command:
         - /kaniko/executor
       args:
@@ -87,9 +83,9 @@ spec:
     - name: push
       image: quay.io/skopeo/stable
       command:
-        - /usr/bin/skopeo
+        - /bin/usr/skopeo
       args:
-        - --insecure-policy      
+        - --insecure-policy
         - --dest-authfile
         - /tekton/home/.docker/config.json
         - copy
