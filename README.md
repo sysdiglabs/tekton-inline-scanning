@@ -108,4 +108,73 @@ You can find full pipelines examples for both **alpha** and **beta** Tekton API 
 * [pipeline-example-alpha.yaml](./alpha/tekton-inline-scan-alpha.yaml).
 * [pipeline-example-beta.yaml](./beta/tekton-inline-scan-beta.yaml).
 
+They are quite similar, but each derives from the tutorial examples given for those versions of the API. Main difference is how registry credential secrets were recommended to be handled, but the task for build-scan-push is almost identical.
 
+### Tekton beta API example
+
+Follow these steps to test the Tekton beta API example from this repo.
+
+* Modify `beta/sample-registry-secrets.sh` script with your registry credentials.
+* Modify `beta/sample-sysdig-secrets.yaml` and paste your Sysdig Secure API key.
+* Modify `beta/tekton-inlin-scan-beta.yaml` file, at line 32 substitude `index.docker.io/your_user/leeroy-web` for the image tag you want to use on your registry account.
+
+* Execute these commands:
+
+```bash
+# Deploy Tekton v0.16.3
+kubectl apply -f https://github.com/tektoncd/pipeline/releases/download/v0.16.3/release.notags.yaml
+
+# Deploy Dashboard v0.9.0
+kubectl apply -f https://github.com/tektoncd/dashboard/releases/download/v0.9.0/tekton-dashboard-release.yaml
+
+# Check that Tekton and dashboard pod status are ready
+kubectl get pods -n tekton-pipelines
+
+# Prepare example
+cd beta
+./sample-registry-secrets-beta.sh
+kubectl apply -f sample-sysdig-secrets.yaml -n tekton-pipelines
+./service-role.sh
+
+# Execute example
+kubectl create -f tekton-inline-scan-beta.yaml -n tekton-pipelines
+
+# Open proxy connection to dashboard
+kubectl port-forward svc/tekton-dashboard -n tekton-pipelines 9097:9097
+
+# Browse dashboard web page at http://[::1]:9097
+```
+
+### Tekton alpha API example
+
+Follow these steps to test the Tekton beta API example from this repo.
+
+* Modify `alpha/sample-registry-secrets-beta.yaml` file with your registry credentials.
+* Modify `alpha/sample-sysdig-secrets.yaml` and paste your Sysdig Secure API key.
+* Modify `alpha/tekton-inlin-scan-alpha.yaml` file, at line 153 substitude `docker.io/username/leeroy-web2a` for the image tag you want to use on your registry account.
+
+* Execute these commands:
+
+```bash
+# Deploy Tekton v0.10.2
+kubectl apply -f https://github.com/tektoncd/pipeline/releases/download/v0.10.2/release.notags.yaml
+
+# Deploy Dashboard v0.5.1
+kubectl apply -f https://github.com/tektoncd/dashboard/releases/download/v0.5.1/tekton-dashboard-release.yaml
+
+# Check that Tekton and dashboard pod status are ready
+kubectl get pods -n tekton-pipelines
+
+# Prepare example
+cd alpha
+kubectl apply -f sample-registry-secrets.yaml
+kubectl apply -f sample-sysdig-secrets.yaml
+
+# Execute example
+kubectl apply -f tekton-inline-scan-alpha.yaml
+
+# Open proxy connection to dashboard
+kubectl port-forward svc/tekton-dashboard -n tekton-pipelines 9097:9097
+
+# Browse dashboard web page at http://[::1]:9097
+```
