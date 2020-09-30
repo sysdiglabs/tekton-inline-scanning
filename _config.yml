@@ -1,1 +1,6 @@
 theme: jekyll-theme-cayman
+
+title: Tekton inline scanning with Sysdig
+
+github:
+  is_project_page: false
