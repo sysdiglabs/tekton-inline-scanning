@@ -27,7 +27,7 @@ You have to define a scanning step after building an image in a Tekton task, so 
             key: sysdig-secure-api-key
 ```
 
-You'll need to add a secret for your Sysdig Secure API token, and reference it in the service account definition that executes the pipeline, as you can see in the [full pipeline example for beta Tekton API](./beta/tekton-inline-scan-beta.yaml).
+You'll need to add a secret for your Sysdig Secure API token, and reference it in the service account definition that executes the pipeline, as you can see in the [full pipeline example for beta Tekton API](./beta/tekton-inline-scan-localbuild-beta.yaml).
 
 ## Build-scan-push Tekton Task
 
@@ -105,8 +105,8 @@ spec:
 
 You can find full pipelines examples for both **alpha** and **beta** Tekton API in the following files of this repo:
 
-* [pipeline-example-alpha.yaml](./alpha/tekton-inline-scan-alpha.yaml).
-* [pipeline-example-beta.yaml](./beta/tekton-inline-scan-beta.yaml).
+* [pipeline-example-alpha.yaml](./alpha/tekton-inline-scan-localbuild-alpha.yaml).
+* [pipeline-example-beta.yaml](./beta/tekton-inline-scan-locallbuild-beta.yaml).
 
 They are quite similar, but each derives from the tutorial examples given for those versions of the API. Main difference is how registry credential secrets were recommended to be handled, but the task for build-scan-push is almost identical.
 
@@ -137,7 +137,7 @@ kubectl apply -f sample-sysdig-secrets.yaml -n tekton-pipelines
 ./service-role.sh
 
 # Execute example
-kubectl create -f tekton-inline-scan-beta.yaml -n tekton-pipelines
+kubectl create -f tekton-inline-scan-localbuild-beta.yaml -n tekton-pipelines
 
 # Open proxy connection to dashboard
 kubectl port-forward svc/tekton-dashboard -n tekton-pipelines 9097:9097
@@ -171,7 +171,7 @@ kubectl apply -f sample-registry-secrets.yaml
 kubectl apply -f sample-sysdig-secrets.yaml
 
 # Execute example
-kubectl apply -f tekton-inline-scan-alpha.yaml
+kubectl apply -f tekton-inline-scan-localbuild-localbuild-alpha.yaml
 
 # Open proxy connection to dashboard
 kubectl port-forward svc/tekton-dashboard -n tekton-pipelines 9097:9097
