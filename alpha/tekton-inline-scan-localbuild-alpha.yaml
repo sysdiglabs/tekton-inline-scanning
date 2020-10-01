@@ -72,6 +72,10 @@ spec:
 
     - name: build
       image: gcr.io/kaniko-project/executor:latest
+      # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
+      env:
+        - name: "DOCKER_CONFIG"
+          value: "/tekton/home/.docker/"      
       command:
         - /kaniko/executor
       args:
