@@ -13,9 +13,9 @@ metadata:
   name: build-bot-tekton-pipelines-admin
   namespace: tekton-pipelines
 subjects:
-- kind: User
-  name: build-bot
-  apiGroup: rbac.authorization.k8s.io
+  - kind: User
+    name: build-bot
+    apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: Role
   name: tekton-pipelines-admin
@@ -27,12 +27,12 @@ metadata:
   name: build-bot-deploy-role
   namespace: tekton-pipelines
 rules:
-- apiGroups: ["extensions", "apps"]
-  resources: ["deployments"]
-  verbs: ["get", "create", "update", "patch"]
-- apiGroups: [""]
-  resources: ["services"]
-  verbs: ["get", "create", "update", "patch"]
+  - apiGroups: ["extensions", "apps"]
+    resources: ["deployments"]
+    verbs: ["get", "create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "create", "update", "patch"]
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -40,9 +40,9 @@ metadata:
   name: build-bot-deploy-binding
   namespace: tekton-pipelines
 subjects:
-- kind: ServiceAccount
-  name: build-bot
-  namespace: tekton-pipelines
+  - kind: ServiceAccount
+    name: build-bot
+    namespace: tekton-pipelines
 roleRef:
   kind: Role
   name: build-bot-deploy-role
@@ -80,29 +80,18 @@ spec:
 
     - name: scan
       image: sysdiglabs/sysdig-inline-scan:latest
-      command:
-        - /bin/sh
       args:
-        - -c
-        - "/sysdig-inline-scan.sh -u $DOCKER_USERNAME:$DOCKER_PASS -k $SYSDIG_API_TOKEN $IMAGE"
+        - -l
+        - /tekton/home/.docker/config.json
+        - $(outputs.resources.builtImage.url)
+      securityContext:
+        runAsUser: 0
       env:
         - name: SYSDIG_API_TOKEN
           valueFrom:
             secretKeyRef:
               name: sysdig-secrets
               key: sysdig-secure-api-key
-        - name: IMAGE
-          value: $(outputs.resources.builtImage.url)
-        - name: DOCKER_USERNAME
-          valueFrom:
-            secretKeyRef: 
-              name: docker-auth-for-tekton
-              key: username
-        - name: DOCKER_PASS
-          valueFrom:
-            secretKeyRef:
-              name: docker-auth-for-tekton
-              key: password
 
 ---
 apiVersion: tekton.dev/v1alpha1
@@ -111,33 +100,30 @@ metadata:
   name: demo-pipeline
 spec:
   resources:
-  - name: source-repo
-    type: git
-  - name: web-image
-    type: image
+    - name: source-repo
+      type: git
+    - name: web-image
+      type: image
 
   tasks:
 
-  - name: build-skaffold-web
-    taskRef:
-      name: build-scan-push
-    params:
-    - name: pathToDockerFile
-      value: Dockerfile
-    - name: pathToContext
-      value: /workspace/repository/examples/microservices/leeroy-web
-    resources:
-      inputs:
-      - name: repository
-        resource: source-repo
-      outputs:
-      - name: builtImage
-        resource: web-image
-
-
+    - name: build-skaffold-web
+      taskRef:
+        name: build-scan-push
+      params:
+        - name: pathToDockerFile
+          value: Dockerfile
+        - name: pathToContext
+          value: /workspace/repository/examples/microservices/leeroy-web
+      resources:
+        inputs:
+          - name: repository
+            resource: source-repo
+        outputs:
+          - name: builtImage
+            resource: web-image
 
 # =================================================
-
 
 ---
 apiVersion: tekton.dev/v1alpha1
@@ -147,8 +133,8 @@ metadata:
 spec:
   type: image
   params:
-  - name: url
-    value: docker.io/vicenteherrera/leeroy-web
+    - name: url
+      value: docker.io/vicenteherrera/leeroy-web
 
 ---
 apiVersion: tekton.dev/v1alpha1
@@ -158,11 +144,11 @@ metadata:
 spec:
   type: git
   params:
-  - name: revision
-    value: v0.32.0
-  - name: url
-    value: https://github.com/GoogleContainerTools/skaffold
-    
+    - name: revision
+      value: v0.32.0
+    - name: url
+      value: https://github.com/GoogleContainerTools/skaffold
+
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
@@ -173,10 +159,9 @@ spec:
     name: demo-pipeline
   serviceAccountName: build-bot
   resources:
-  - name: source-repo
-    resourceRef:
-      name: skaffold-git-pipelinerun
-  - name: web-image
-    resourceRef:
-      name: skaffold-image-leeroy-web-pipelinerun
-
+    - name: source-repo
+      resourceRef:
+        name: skaffold-git-pipelinerun
+    - name: web-image
+      resourceRef:
+        name: skaffold-image-leeroy-web-pipelinerun
