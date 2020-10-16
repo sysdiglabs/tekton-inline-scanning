@@ -178,3 +178,11 @@ kubectl port-forward svc/tekton-dashboard -n tekton-pipelines 9097:9097
 
 # Browse dashboard web page at http://[::1]:9097
 ```
+
+## References
+
+* [Sysdig Inline Scan](https://github.com/sysdiglabs/secure-inline-scan), _code repository_ and _direct project documentation_. This is the main source of truth for Sysdig inline scanning.
+* [Inline Scanning](https://docs.sysdig.com/en/integrate-with-ci-cd-tools.html#UUID-8945ddee-8c45-58b4-7d85-e06c4235d03c_UUID-5d107c7b-457e-3862-51b5-01bdd9699105), _Sysdig Documentation Hub_.
+* [Securing Tekton pipelines in OpenShift with Sysdig](https://sysdig.com/blog/securing-tekton-pipelines-openshift/), _blogpost_.
+  ⚠**Deprecated information**.
+
