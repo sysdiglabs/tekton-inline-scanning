@@ -81,9 +81,9 @@ spec:
               key: sysdig-secure-api-key
 
     - name: push
-      image: quay.io/skopeo/stable
+      image: quay.io/skopeo/stable:v1.1.1
       command:
-        - /bin/usr/skopeo
+        - /usr/bin/skopeo
       args:
         - --insecure-policy
         - --dest-authfile
