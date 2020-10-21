@@ -79,10 +79,12 @@ spec:
         - --context=$(inputs.params.pathToContext)
 
     - name: scan
-      image: sysdiglabs/sysdig-inline-scan:latest
+      image: sysdiglabs/sysdiglabs/secure-inline-scan:2
       args:
-        - -l
+        - --registry-auth-file
         - /tekton/home/.docker/config.json
+        - -s
+        - https://secure.sysdig.com
         - $(outputs.resources.builtImage.url)
       securityContext:
         runAsUser: 0

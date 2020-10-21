@@ -68,10 +68,14 @@ spec:
         - --no-push
 
     - name: scan
-      image: sysdiglabs/sysdig-inline-scan:latest
+      image: sysdiglabs/secure-inline-scan:2
       args:
-        - -U
+        - --storage-type
+        - oci-dir
+        - --storage-path
         - /workspace/oci
+        - -s
+        - https://secure.sysdig.com
         - $(outputs.resources.builtImage.url)
       env:
         - name: SYSDIG_API_TOKEN
