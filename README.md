@@ -14,10 +14,14 @@ You have to define a scanning step after building an image in a Tekton task, so 
 
 ```yaml
   - name: scan
-    image: sysdiglabs/sysdig-inline-scan:latest
+    image: sysdiglabs/secure-inline-scan:2
     args:
-      - -U
-      - $(workspaces.source.path)/$(params.CONTEXT)/image-digest
+      - --storage-type
+      - oci-dir
+      - --storage-path
+      - /workspace/oci
+      - -s
+      - https://secure.sysdig.com
       - $(outputs.resources.builtImage.url)
     env:
       - name: SYSDIG_API_TOKEN
@@ -62,10 +66,6 @@ spec:
   steps:
     - name: build
       image: gcr.io/kaniko-project/executor:v0.16.0
-      # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
-      env:
-        - name: "DOCKER_CONFIG"
-          value: "/tekton/home/.docker/"
       command:
         - /kaniko/executor
       args:
@@ -76,10 +76,14 @@ spec:
         - --no-push
 
     - name: scan
-      image: sysdiglabs/sysdig-inline-scan:latest
+      image: sysdiglabs/secure-inline-scan:2
       args:
-        - -U
+        - --storage-type
+        - oci-dir
+        - --storage-path
         - /workspace/oci
+        - -s
+        - https://secure.sysdig.com
         - $(outputs.resources.builtImage.url)
       env:
         - name: SYSDIG_API_TOKEN
@@ -89,16 +93,17 @@ spec:
               key: sysdig-secure-api-key
 
     - name: push
-      image: quay.io/skopeo/stable
+      image: quay.io/skopeo/stable:v1.1.1
       command:
         - /usr/bin/skopeo
       args:
-        - --insecure-policy      
+        - --insecure-policy
         - --dest-authfile
         - /tekton/home/.docker/config.json
         - copy
         - oci:/workspace/oci/
         - docker://$(outputs.resources.builtImage.url)
+
 ```
 
 ## Full pipeline examples with inline scanning for alpha and beta Tekton API
@@ -114,9 +119,20 @@ They are quite similar, but each derives from the tutorial examples given for th
 
 Follow these steps to test the Tekton beta API example from this repo.
 
+```console
+oc new-project tekton-pipelines
+oc adm policy add-scc-to-user anyuid -z tekton-pipelines-controller
+```
+
 * Modify `beta/sample-registry-secrets.sh` script with your registry credentials.
 * Modify `beta/sample-sysdig-secrets.yaml` and paste your Sysdig Secure API key.
 * Modify `beta/tekton-inlin-scan-beta.yaml` file, at line 32 substitude `index.docker.io/your_user/leeroy-web` for the image tag you want to use on your registry account.
+
+If you use OpenShift instead of Kubernetes, execute these commands to create a project and specify anyuid to the Tekton pipeline controller so it can run containers with root user (required by Tekton).
+
+```bash
+oc new-project tekton-pipelines
+oc ad
 
 * Execute these commands:
 
@@ -152,6 +168,13 @@ Follow these steps to test the Tekton beta API example from this repo.
 * Modify `alpha/sample-registry-secrets-beta.yaml` file with your registry credentials.
 * Modify `alpha/sample-sysdig-secrets.yaml` and paste your Sysdig Secure API key.
 * Modify `alpha/tekton-inlin-scan-alpha.yaml` file, at line 153 substitude `docker.io/username/leeroy-web2a` for the image tag you want to use on your registry account.
+
+If you use OpenShift instead of Kubernetes, execute these commands to create a project and specify anyuid to the Tekton pipeline controller so it can run containers with root user (required by Tekton).
+
+```bash
+oc new-project tekton-pipelines
+oc adm policy add-scc-to-user anyuid -z tekton-pipelines-controller
+```
 
 * Execute these commands:
 
