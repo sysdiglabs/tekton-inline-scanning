@@ -136,7 +136,7 @@ spec:
   type: image
   params:
     - name: url
-      value: docker.io/vicenteherrera/leeroy-web
+      value: docker.io/username/leeroy-web
 
 ---
 apiVersion: tekton.dev/v1alpha1
