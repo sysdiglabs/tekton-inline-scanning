@@ -1,5 +1,9 @@
 # Tekton inline scanning with Sysdig
 
+**⚠ WARNING ⚠**: _This documentation has been incorporated into the [Sysdig Secure inline scan repository examples directory](https://github.com/sysdiglabs/secure-inline-scan/tree/master/examples/tekton). It will not be maintained here, and may eventually be removed in favor of that source of information._
+
+--
+
 This repository contains instructions and examples of how to use Sysdig inline scanning to detect vulnerabilities and misconfiguration in a Tekton CI/CD pipeline, using the **alpha** and **beta** Tekton API.
 
 They have been tested and can be used for **vanilla Kubernetes** as well as on **OpenShift**, as Sysdig inline scanning doesn't require a privileged container.
